@@ -215,24 +215,15 @@
       position: relative;
       width: 100%;
       margin-top: -60px;
-    }
-
-    .hero img {
-      width: 100%;
-      height: auto;
-      display: block;
+      padding-top: 66.67%; /* 800/1200 * 100 */
+      background: #111 url('hero3.jpg') center center / 100% auto no-repeat;
     }
 
     .hero-overlay {
-      position: absolute;
-      left: 3.5rem;
-      bottom: 3.5rem;
-    }
-
-    .hero-overlay.sticky-overlay {
       position: fixed;
-      bottom: 3.5rem;
       left: 3.5rem;
+      bottom: 3.5rem;
+      z-index: 50;
     }
 
     .hero-label {
@@ -339,7 +330,6 @@
 
   <!-- HERO -->
   <div class="hero" id="hero">
-    <img src="hero.jpg" alt="New Arrivals Doragon" id="hero-img">
     <div class="hero-overlay" id="hero-overlay">
       <p class="hero-label">New Arrivals</p>
       <a href="#" class="hero-btn">Shop Now</a>
@@ -357,23 +347,23 @@
 
     function updateOverlay() {
       const heroRect   = hero.getBoundingClientRect();
-      const heroBottom = heroRect.bottom; // distancia desde top viewport al pie de la foto
-      const margin     = 56; // 3.5rem en px aprox
+      const heroBottom = heroRect.bottom;
+      const margin     = 56;
+      const overlayH   = overlay.offsetHeight;
+      const anchorTop  = hero.offsetHeight - margin - overlayH;
 
-      // Pie de la foto todavía visible en pantalla → overlay se queda fixed flotando
-      // Pie de la foto fuera de pantalla (arriba) → overlay se ancla al pie de la foto
-      if (heroBottom > margin + overlay.offsetHeight) {
-        // La foto sigue ocupando pantalla: overlay fixed abajo-izquierda
+      if (heroBottom > margin + overlayH) {
+        // Foto aún en pantalla: overlay fixed abajo izquierda
         overlay.style.position = 'fixed';
+        overlay.style.top      = '';
         overlay.style.bottom   = margin + 'px';
         overlay.style.left     = '3.5rem';
-        overlay.style.top      = '';
       } else {
-        // El pie de la foto ya pasó: anclar al pie de la foto (absolute)
+        // Pie de foto ya fuera: anclar arriba dentro del hero
         overlay.style.position = 'absolute';
-        overlay.style.bottom   = margin + 'px';
+        overlay.style.bottom   = '';
+        overlay.style.top      = anchorTop + 'px';
         overlay.style.left     = '3.5rem';
-        overlay.style.top      = '';
       }
     }
 
