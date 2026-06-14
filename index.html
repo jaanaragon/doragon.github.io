@@ -214,21 +214,23 @@
     .hero {
       position: relative;
       width: 100%;
-      height: 100vh;
-      overflow: hidden;
       margin-top: -60px;
     }
 
     .hero img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
+      height: auto;
       display: block;
     }
 
     .hero-overlay {
       position: absolute;
+      left: 3.5rem;
+      bottom: 3.5rem;
+    }
+
+    .hero-overlay.sticky-overlay {
+      position: fixed;
       bottom: 3.5rem;
       left: 3.5rem;
     }
@@ -336,32 +338,52 @@
   </nav>
 
   <!-- HERO -->
-  <div class="hero">
-    <img src="hero.jpg" alt="New Arrivals Doragon">
-    <div class="hero-overlay">
+  <div class="hero" id="hero">
+    <img src="hero.jpg" alt="New Arrivals Doragon" id="hero-img">
+    <div class="hero-overlay" id="hero-overlay">
       <p class="hero-label">New Arrivals</p>
       <a href="#" class="hero-btn">Shop Now</a>
     </div>
   </div>
 
-  <div style="height:100vh; background:#0a0a0a;"></div>
+  <div style="height:60vh; background:#0a0a0a;"></div>
 
   <script>
-    const ticker = document.getElementById('ticker-bar');
-    const navbar = document.getElementById('navbar');
+    const ticker  = document.getElementById('ticker-bar');
+    const navbar  = document.getElementById('navbar');
+    const hero    = document.getElementById('hero');
+    const overlay = document.getElementById('hero-overlay');
     let lastY = 0;
+
+    function updateOverlay() {
+      const heroRect   = hero.getBoundingClientRect();
+      const heroBottom = heroRect.bottom; // distancia desde top viewport al pie de la foto
+      const margin     = 56; // 3.5rem en px aprox
+
+      // Pie de la foto todavía visible en pantalla → overlay se queda fixed flotando
+      // Pie de la foto fuera de pantalla (arriba) → overlay se ancla al pie de la foto
+      if (heroBottom > margin + overlay.offsetHeight) {
+        // La foto sigue ocupando pantalla: overlay fixed abajo-izquierda
+        overlay.style.position = 'fixed';
+        overlay.style.bottom   = margin + 'px';
+        overlay.style.left     = '3.5rem';
+        overlay.style.top      = '';
+      } else {
+        // El pie de la foto ya pasó: anclar al pie de la foto (absolute)
+        overlay.style.position = 'absolute';
+        overlay.style.bottom   = margin + 'px';
+        overlay.style.left     = '3.5rem';
+        overlay.style.top      = '';
+      }
+    }
 
     window.addEventListener('scroll', () => {
       const y = window.scrollY;
 
-      // Ticker: ocultar al bajar, mostrar solo cuando estamos en top
-      if (y <= 0) {
-        ticker.classList.remove('hidden');
-      } else {
-        ticker.classList.add('hidden');
-      }
+      // Ticker
+      ticker.classList.toggle('hidden', y > 0);
 
-      // Navbar: solid (blanco) al hacer scroll hacia ARRIBA (no en el top)
+      // Navbar solid al scrollear hacia arriba
       if (y > 0 && y < lastY) {
         navbar.classList.add('solid');
       } else {
@@ -369,7 +391,10 @@
       }
 
       lastY = y;
+      updateOverlay();
     });
+
+    updateOverlay();
   </script>
 
 </body>
